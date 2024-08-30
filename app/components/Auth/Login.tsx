@@ -1,5 +1,4 @@
 "use client";
-
 import React, { FC, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -11,6 +10,7 @@ import {
 import { FcGoogle } from "react-icons/fc";
 import { styles } from "../../../app/styles/style";
 import { useLoginMutation } from "@/redux/features/auth/authApi";
+import toast from "react-hot-toast";
 
 type Props = {
   setRoute: (route: string) => void;
@@ -26,7 +26,7 @@ const schema = Yup.object().shape({
 
 const Login: FC<Props> = ({setRoute,setOpen}) => {
   const [show, setShow] = useState(false);
-  const [login,{isSuccess,isError,data}] = useLoginMutation();
+  const [login,{isSuccess,error,data}] = useLoginMutation();
   const formik = useFormik({
     initialValues: { email: "", password: "" },
     validationSchema: schema,
@@ -37,9 +37,16 @@ const Login: FC<Props> = ({setRoute,setOpen}) => {
 
   useEffect(() => {
     if(isSuccess){
+      toast.success("Login Successfully!");
       setOpen(false);
     }
-  }, [isSuccess, setOpen])
+    if(error){
+      if("data" in error){
+        const errorData = error as any;
+        toast.error(errorData.data.message);
+      }
+     }
+  }, [error, isSuccess, setOpen])
   
 
   const { errors, touched, values, handleChange, handleSubmit } = formik;
