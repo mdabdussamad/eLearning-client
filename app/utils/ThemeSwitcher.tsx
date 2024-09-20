@@ -17,18 +17,18 @@ export const ThemeSwitcher = () => {
     <div className="flex items-center justify-center mx-4">
       {theme === "light" ? (
         <BiMoon
-          className="cursor-pointer"
+          className="cursor-pointer text-black"
           fill="black"
           size={25}
           onClick={() => setTheme("dark")}
-          {...({} as React.ComponentProps<'svg'>)} // Explicit type assertion
+          {...({} as React.ComponentProps<'svg'>)}  
         />
       ) : (
         <BiSun
           className="cursor-pointer text-white"
           size={25}
           onClick={() => setTheme("light")}
-          {...({} as React.ComponentProps<'svg'>)} // Explicit type assertion
+          {...({} as React.ComponentProps<'svg'>)}  
         />
       )}
     </div>

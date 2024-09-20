@@ -3,8 +3,12 @@ import { styles } from "../../../app/styles/style";
 import React, { FC, useEffect, useState } from "react";
 import { AiOutlineCamera } from "react-icons/ai";
 import avatarIcon from "../../../public/assests/avatar.png";
-import { useUpdateAvatarMutation } from "@/redux/features/user/userApi";
+import {
+  useEditProfileMutation,
+  useUpdateAvatarMutation,
+} from "@/redux/features/user/userApi";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
+import {toast} from "react-hot-toast";
 
 type Props = {
   avatar: string | null;
@@ -14,34 +18,43 @@ type Props = {
 const ProfileInfo: FC<Props> = ({ avatar, user }) => {
   const [name, setName] = useState(user && user.name);
   const [updateAvatar, { isSuccess, error }] = useUpdateAvatarMutation();
+  const [editProfile, { isSuccess: success, error: updateError }] =
+    useEditProfileMutation();
   const [loadUser, setLoadUser] = useState(false);
   const {} = useLoadUserQuery(undefined, { skip: loadUser ? false : true });
 
-  const imageHandler = async (e: any) => {
+  const imageHandler = async (e: any) => {    
     const fileReader = new FileReader();
 
     fileReader.onload = () => {
       if (fileReader.readyState === 2) {
         const avatar = fileReader.result;
-        updateAvatar(
-          avatar
-        );
+        updateAvatar(avatar);
       }
     };
     fileReader.readAsDataURL(e.target.files[0]);
   };
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess || success) {
       setLoadUser(true);
     }
-    if (error) {
+    if (error || updateError) {
       console.log(error);
     }
-  }, [error, isSuccess]);
+    if (success) {
+      toast.success("Profile updated successfully!");
+      setLoadUser(true);
+    }
+  }, [error, isSuccess, success, updateError]);
 
   const handleSubmit = async (e: any) => {
-    console.log("submit");
+    e.preventDefault();
+    if (name !== "") {
+      await editProfile({
+        name: name,
+      });
+    }
   };
 
   return (
@@ -86,7 +99,9 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
               />
             </div>
             <div className="w-[100%] pt-2">
-              <label className="block pb-2 dark:text-slate-50">Email Address</label>
+              <label className="block pb-2 dark:text-slate-50">
+                Email Address
+              </label>
               <input
                 type="text"
                 readOnly
@@ -98,7 +113,7 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
             <input
               className={`w-full 800px:w-[250px] h-[40px] border border-[#37a39a] dark:text-slate-50 text-black rounded-[3px] mt-8 cursor-pointer`}
               required
-              value="update"
+              value="Update"
               type="submit"
             />
           </div>
