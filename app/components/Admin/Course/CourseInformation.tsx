@@ -1,5 +1,7 @@
 import { styles } from "@/app/styles/style";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
+import EditCategories from "../Customization/EditCategories";
+import { useGetHeroDataQuery } from "@/redux/features/layout/layoutApi";
 
 type Props = {
   courseInfo: any;
@@ -15,6 +17,14 @@ const CourseInformation: FC<Props> = ({
   setActive,
 }) => {
   const [dragging, setDragging] = useState(false);
+  const { data } = useGetHeroDataQuery("Categories", {});
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    if (data) {
+      setCategories(data.layout.categories);
+    }
+  }, [data]);
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -94,45 +104,47 @@ const CourseInformation: FC<Props> = ({
               setCourseInfo({ ...courseInfo, description: e.target.value })
             }
           ></textarea>
-          <br />
-          <div className="w-full flex justify-between">
-            <div className="w-[45%]">
-              <label className={`${styles.label}`}>Course Price</label>
-              <input
-                type="number"
-                name=""
-                required
-                value={courseInfo.price}
-                onChange={(e: any) =>
-                  setCourseInfo({ ...courseInfo, price: e.target.value })
-                }
-                id="price"
-                placeholder="29"
-                className={`${styles.input}`}
-              />
-            </div>
-            <div className="w-[50%]">
-              <label className={`${styles.label} w-[50%]`}>
-                Estimated Price (optional)
-              </label>
-              <input
-                type="number"
-                name=""
-                value={courseInfo.estimatedPrice}
-                onChange={(e: any) =>
-                  setCourseInfo({
-                    ...courseInfo,
-                    estimatedPrice: e.target.value,
-                  })
-                }
-                id="price"
-                placeholder="79"
-                className={`${styles.input}`}
-              />
-            </div>
+        </div>
+        <br />
+        <div className="w-full flex justify-between">
+          <div className="w-[45%]">
+            <label className={`${styles.label}`}>Course Price</label>
+            <input
+              type="number"
+              name=""
+              required
+              value={courseInfo.price}
+              onChange={(e: any) =>
+                setCourseInfo({ ...courseInfo, price: e.target.value })
+              }
+              id="price"
+              placeholder="29"
+              className={`${styles.input}`}
+            />
           </div>
-          <br />
-          <div>
+          <div className="w-[50%]">
+            <label className={`${styles.label} w-[50%]`}>
+              Estimated Price (optional)
+            </label>
+            <input
+              type="number"
+              name=""
+              value={courseInfo.estimatedPrice}
+              onChange={(e: any) =>
+                setCourseInfo({
+                  ...courseInfo,
+                  estimatedPrice: e.target.value,
+                })
+              }
+              id="price"
+              placeholder="79"
+              className={`${styles.input}`}
+            />
+          </div>
+        </div>
+        <br />
+        <div className="w-full flex justify-between">
+          <div className="w-[45%]">
             <label className={`${styles.label}`} htmlFor="email">
               Course Tags
             </label>
@@ -148,6 +160,58 @@ const CourseInformation: FC<Props> = ({
               placeholder="MERN, Next 13, Socket io, tailwind css, LMS"
               className={`${styles.input}`}
             />
+          </div>
+          <div className="w-[50%]">
+            <label className={`${styles.label}`}>Course Categories</label>
+            <select 
+              name=" 
+              id=" 
+              className={`${styles.input}`}
+              value={courseInfo.category}
+              onChange={(e: any) =>
+                setCourseInfo({...courseInfo, category: e.target.value})
+              }
+            >
+              <option value="">Select Category</option>
+              {categories.map((item: any) => (
+                <option value={item._id} key={item._id}>
+                  {item.title}
+                </option>
+              ))}
+            </select>
+          </div>
+          <br />
+          <div className="w-full flex justify-between">
+            <div className="w-[45%]">
+              <label className={`${styles.label}`}>Course Level</label>
+              <input
+                type="text"
+                name=""
+                required
+                value={courseInfo.level}
+                onChange={(e: any) =>
+                  setCourseInfo({ ...courseInfo, level: e.target.value })
+                }
+                id="level"
+                placeholder="Beginner/Intermediate/Expert"
+                className={`${styles.input}`}
+              />
+            </div>
+            <div className="w-[50%]">
+              <label className={`${styles.label}`}>Demo Url</label>
+              <input
+                type="text"
+                name=""
+                required
+                value={courseInfo.demoUrl}
+                onChange={(e: any) =>
+                  setCourseInfo({ ...courseInfo, demoUrl: e.target.value })
+                }
+                id="demoUrl"
+                placeholder="eer74fd"
+                className={`${styles.input}`}
+              />
+            </div>
           </div>
           <br />
           <div className="w-full flex justify-between">
@@ -191,15 +255,17 @@ const CourseInformation: FC<Props> = ({
               className="hidden"
               onChange={handleFileChange}
             />
-            <label htmlFor="file"
-              className={`w-full min-h-[10vh] dark:border-white border-[00000026] p-3 border flex items-center justify-center ${dragging ? "bg-blue-500" : "bg-transparent"                
+            <label
+              htmlFor="file"
+              className={`w-full min-h-[10vh] dark:border-white border-[00000026] p-3 border flex items-center justify-center ${
+                dragging ? "bg-blue-500" : "bg-transparent"
               }`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
             >
               {courseInfo.thumbnail ? (
-                <img 
+                <img
                   src={courseInfo.thumbnail}
                   alt=""
                   className="max-h-full w-full object-cover"
@@ -213,7 +279,7 @@ const CourseInformation: FC<Props> = ({
           </div>
           <br />
           <div className="w-full flex items-center justify-end">
-            <input 
+            <input
               type="submit"
               value="Next"
               className="w-full 800px:w-[180px] h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8 cursor-pointer"

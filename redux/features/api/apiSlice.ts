@@ -1,10 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { userLoggedIn } from "../auth/authSlice";
 
+ // baseUrl: process.env.NEXT_PUBLIC_SERVER_URI,
+// baseUrl: "https://e-learning-api-navy.vercel.app/api/v1/",
 export const apiSlice = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_SERVER_URI,
+  baseQuery: fetchBaseQuery({   
+    baseUrl: "https://e-learning-api-navy.vercel.app/api/v1/",
   }),
   endpoints: (builder) => ({
     refreshToken: builder.query({

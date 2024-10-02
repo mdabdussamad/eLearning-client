@@ -1,9 +1,10 @@
 "use client";
+import DashboardHero from "@/app/components/Admin/DashboardHero";
+import AdminProtected from "@/app/hooks/adminProtected";
+import Heading from "@/app/utils/Heading";
 import React from "react";
-import Heading from "../utils/Heading";
-import AdminSidebar from "../components/Admin/sidebar/AdminSidebar";
-import AdminProtected from "../hooks/adminProtected";
-import DashboardHero from "../components/Admin/DashboardHero";
+import AdminSidebar from "../../components/Admin/sidebar/AdminSidebar";
+import CourseAnalytics from "../../components/Admin/Analytics/CourseAnalytics";
 
 type Props = {};
 
@@ -16,12 +17,13 @@ const page = (props: Props) => {
           description="eLearning is a platform for student to learn and get help from teachers"
           keywords="Programing, MERN, Redux, Machine Learning"
         />
-        <div className="flex h-[200vh">
+        <div className="flex h-screen">
           <div className="1500px:w-[16%] w-1/5">
             <AdminSidebar />
           </div>
           <div className="w-[85%]">
-            <DashboardHero isDashboard={true} />
+            <DashboardHero />
+            <CourseAnalytics />
           </div>
         </div>
       </AdminProtected>
