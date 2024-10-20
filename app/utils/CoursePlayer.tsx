@@ -23,18 +23,18 @@
 //   }, [videoUrl]);
 
 //   return (
-//     <div style={{ paddingTop: "41%", position: "relative" }}>
+//     <div style={{ position: "relative", paddingTop: "56.25%", overflow:"hidden" }}>
 //       {
 //       videoData.otp && videoData.playbackInfo !== "" && (
 //         <iframe
 //           src={`https://player.vdocipher.com/v2/?otp=${videoData?.otp}&playbackInfo=${videoData.playbackInfo}&player=kcE8PJhV8dT2TXmI`}
 //           style={{
-//             border: 0,
-//             width: "90%",
-//             height: "100%",
 //             position: "absolute",
 //             top: 0,
 //             left: 0,
+//             width: "100%",
+//             height: "100%",
+//             border: 0,
 //           }}
 //           allowFullScreen={true}
 //           allow="encrypted-media"
@@ -56,7 +56,8 @@ type Props = {
 const CoursePlayer: FC<Props> = ({ videoUrl }) => {
   const extractYouTubeVideoId = (url: string) => {
     // Regex to extract YouTube video ID
-    const regExp = /^.*(youtu.be\/|v\/|\/u\/\w\/|embed\/|watch\?v=|\&v=|^\/watch\?v=|\/shorts\/)([^#\&\?]*).*/;
+    const regExp =
+      /^.*(youtu.be\/|v\/|\/u\/\w\/|embed\/|watch\?v=|\&v=|^\/watch\?v=|\/shorts\/)([^#\&\?]*).*/;
     const match = url.match(regExp);
     return match && match[2].length === 11 ? match[2] : null;
   };
@@ -69,12 +70,12 @@ const CoursePlayer: FC<Props> = ({ videoUrl }) => {
         <iframe
           src={`https://www.youtube.com/embed/${videoId}`}
           style={{
-            border: 0,
-            width: "90%",
-            height: "100%",
             position: "absolute",
             top: 0,
             left: 0,
+            width: "100%",
+            height: "100%",
+            border: 0,
           }}
           allowFullScreen
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

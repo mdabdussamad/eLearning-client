@@ -12,8 +12,12 @@ import { useSelector } from "react-redux";
 import Image from "next/image";
 import avatar from "../../public/assests/avatar.png";
 import { useSession } from "next-auth/react";
-import { useLogOutQuery, useSocialAuthMutation } from "@/redux/features/auth/authApi";
+import {
+  useLogOutQuery,
+  useSocialAuthMutation,
+} from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
+import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 
 type Props = {
   open: boolean;
@@ -26,33 +30,40 @@ type Props = {
 const Header: FC<Props> = ({ open, setOpen, activeItem, route, setRoute }) => {
   const [active, setActive] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
-  const { user } = useSelector((state: any) => state.auth);
+  const {
+    data: userData,
+    isLoading,
+    refetch,
+  } = useLoadUserQuery(undefined, {});
   const { data } = useSession();
   const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
-  const [logout, setLogout] = useState(false); 
-  const {} = useLogOutQuery(undefined,{
+  const [logout, setLogout] = useState(false);
+  const {} = useLogOutQuery(undefined, {
     skip: !logout ? true : false,
   });
 
   useEffect(() => {
-    if (!user) {
-      if (data) {
-        socialAuth({
-          email: data?.user?.email,
-          name: data?.user?.name,
-          avatar: data.user?.image,
-        });
+    if (!isLoading) {
+      if (!userData) {
+        if (data) {
+          socialAuth({
+            email: data?.user?.email,
+            name: data?.user?.name,
+            avatar: data.user?.image,
+          });
+          refetch();
+        }
+      }
+      if (data === null) {
+        if (isSuccess) {
+          toast.success("Login Successfully");
+        }
+      }
+      if (data === null && !isLoading && !userData) {
+        setLogout(true);
       }
     }
-    if(data === null){
-      if(isSuccess){
-        toast.success("Login Successfully");
-      }
-    }
-    if(data === null){
-      setLogout(true);
-    }
-  }, [data, isSuccess, socialAuth, user]);
+  }, [data, isLoading, isSuccess, refetch, socialAuth, userData]);
 
   if (typeof window !== "undefined") {
     window.addEventListener("scroll", () => {
@@ -101,15 +112,19 @@ const Header: FC<Props> = ({ open, setOpen, activeItem, route, setRoute }) => {
                   {...({} as React.ComponentProps<"svg">)} // Explicit type assertion
                 />
               </div>
-              {user ? (
+              {userData ? (
                 <Link href={"/profile"}>
                   <Image
-                    src={user.avatar ? user.avatar.url : avatar}
+                    src={
+                      userData?.user.avatar ? userData.user.avatar.url : avatar
+                    }
                     alt=""
                     width={30}
                     height={30}
                     className="w-[30px] h-[30px] rounded-full cursor-pointer"
-                    style={{border: activeItem === 5 ? "2px solid #37a39a" : "none"}}
+                    style={{
+                      border: activeItem === 5 ? "2px solid #37a39a" : "none",
+                    }}
                   />
                 </Link>
               ) : (
@@ -135,15 +150,32 @@ const Header: FC<Props> = ({ open, setOpen, activeItem, route, setRoute }) => {
           >
             <div className="w-[70%] fixed z-[999999999] h-screen bg-white dark:bg-slate-900 dark:bg-opacity-90 top-0 right-0">
               <NavItems activeItem={activeItem} isMobile={true} />
-              <HiOutlineUserCircle
-                size={25}
-                className="cursor-pointer ml-5 my-2 dark:text-white text-black"
-                onClick={() => {
-                  setRoute("Login");
-                  setOpen(true);
-                }}
-                {...({} as React.ComponentProps<"svg">)} // Explicit type assertion
-              />
+              {userData ? (
+                <Link href={"/profile"}>
+                  <Image
+                    src={
+                      userData?.user.avatar ? userData.user.avatar.url : avatar
+                    }
+                    alt=""
+                    width={30}
+                    height={30}
+                    className="w-[30px] h-[30px] rounded-full ml-[20px] cursor-pointer"
+                    style={{
+                      border: activeItem === 5 ? "2px solid #37a39a" : "none",
+                    }}
+                  />
+                </Link>
+              ) : (
+                <HiOutlineUserCircle
+                  size={25}
+                  className="hidden 800px:block cursor-pointer dark:text-white text-black"
+                  onClick={() => {
+                    setRoute("Login");
+                    setOpen(true);
+                  }}
+                  {...({} as React.ComponentProps<"svg">)} // Explicit type assertion
+                />
+              )}
               <br />
               <br />
               <p className="text-[16px] px-2 pl-5 text-black dark:text-white">
@@ -154,34 +186,47 @@ const Header: FC<Props> = ({ open, setOpen, activeItem, route, setRoute }) => {
         )}
       </div>
 
-      {open && route === "Login" && (
-        <CustomModal
-          open={open}
-          setOpen={setOpen}
-          activeItem={activeItem}
-          setRoute={setRoute}
-          component={Login}
-        />
+      {route === "Login" && (
+        <>
+          {open && (
+            <CustomModal
+              open={open}
+              setOpen={setOpen}
+              setRoute={setRoute}
+              activeItem={activeItem}
+              component={Login}
+              refetch={refetch}
+            />
+          )}
+        </>
       )}
 
-      {open && route === "Sign-Up" && (
-        <CustomModal
-          open={open}
-          setOpen={setOpen}
-          activeItem={activeItem}
-          setRoute={setRoute}
-          component={SignUp}
-        />
+      {route === "Sign-Up" && (
+        <>
+          {open && (
+            <CustomModal
+            open={open}
+            setOpen={setOpen}
+            activeItem={activeItem}
+            setRoute={setRoute}
+            component={SignUp}
+          />
+          )}
+        </>
       )}
 
-      {open && route === "Verification" && (
-        <CustomModal
-          open={open}
-          setOpen={setOpen}
-          activeItem={activeItem}
-          setRoute={setRoute}
-          component={Verification}
-        />
+      {route === "Verification" && (
+        <>
+          {open && (
+            <CustomModal
+            open={open}
+            setOpen={setOpen}
+            activeItem={activeItem}
+            setRoute={setRoute}
+            component={Verification}
+          />
+          )}
+        </>
       )}
     </div>
   );
